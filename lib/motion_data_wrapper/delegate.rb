@@ -8,7 +8,7 @@ module MotionDataWrapper
           raise "Can't add persistent SQLite store: #{error_ptr[0].description}"
         end
 
-        context = NSManagedObjectContext.alloc.init
+        context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSMainQueueConcurrencyType)
         context.persistentStoreCoordinator = persistentStoreCoordinator
 
         context
@@ -54,11 +54,11 @@ module MotionDataWrapper
         support_dir.URLByAppendingPathComponent("#{sqlite_store_name}.sqlite")
       end
     end
-    
+
     def sqlite_path
       @sqlite_path || File.join(App.documents_path, "#{sqlite_store_name}.sqlite")
     end
-    
+
     def sqlite_path= path
       @sqlite_path = path
     end

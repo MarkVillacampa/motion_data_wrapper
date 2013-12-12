@@ -4,6 +4,7 @@ module MotionDataWrapper
     include FinderMethods
     include Persistence
     include Validations
+    include NestedAttributes
 
     def inspect
       properties = []
