@@ -26,11 +26,21 @@ module MotionDataWrapper
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:nil).tap do |model|
             model.instance_variable_set('@new_record', true)
             attributes.each do |keyPath, value|
+
               if attribute_alias?(keyPath)
                 keyPath = attribute_alias(keyPath)
               end
-              model.setValue(value, forKey:keyPath)
+
+              if (value.is_a?(Hash) || value.is_a?(Array)) && !model.entity.relationshipsByName[keyPath.to_s].nil?
+                model.assign_nested_attributes(keyPath, value)
+              else
+                if model.entity.attributesByName[keyPath.to_s].attributeType == NSDateAttributeType
+                  value = Time.iso8601_with_timezone(value)
+                end
+                model.setValue(value, forKey:keyPath)
+              end
             end
+
           end
         end
 
@@ -84,20 +94,28 @@ module MotionDataWrapper
 
       def save!
         unless context = managedObjectContext
-          context = App.delegate.managedObjectContext
-          context.insertObject(self)
+          insert_in_context(App.delegate.managedObjectContext)
         end
+
+        contexts = [context]
+        contexts << context.parentContext if context.parentContext
 
         before_save_callback
         error = Pointer.new(:object)
-        unless context.save(error)
-          managedObjectContext.deleteObject(self)
-          raise MotionDataWrapper::RecordNotSaved, self and return false
+        contexts.each do |ctx|
+          unless ctx.save(error)
+            ctx.deleteObject(self)
+            raise MotionDataWrapper::RecordNotSaved, self and return false
+          end
         end
         instance_variable_set('@new_record', false)
         after_save_callback
 
         true
+      end
+
+      def insert_in_context(context)
+        context.insertObject(self)
       end
 
       private

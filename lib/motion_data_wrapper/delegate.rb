@@ -8,7 +8,7 @@ module MotionDataWrapper
           raise "Can't add persistent SQLite store: #{error_ptr[0].description}"
         end
 
-        context = NSManagedObjectContext.alloc.init
+        context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSMainQueueConcurrencyType)
         context.persistentStoreCoordinator = persistentStoreCoordinator
 
         context
