@@ -1,0 +1,1 @@
+class Event < MotionDataWrapper::Model; end

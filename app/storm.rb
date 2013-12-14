@@ -1,0 +1,1 @@
+class Storm < MotionDataWrapper::Model; end

@@ -1,0 +1,1 @@
+class Cloud < MotionDataWrapper::Model; end

@@ -1,0 +1,1 @@
+class HoardedCat < MotionDataWrapper::Model; end
