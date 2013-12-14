@@ -8,12 +8,15 @@ module MotionDataWrapper
 
       module ClassMethods
 
-        def create(attributes={})
+        def create(attributes)
           begin
-            model = create!(attributes)
+            if attributes.is_a?(Array)
+              attributes.collect { |attr| create!(attr) }
+            else
+              create!(attributes)
+            end
           rescue MotionDataWrapper::RecordNotSaved
           end
-          model
         end
 
         def create!(attributes={})
