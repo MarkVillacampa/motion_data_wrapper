@@ -22,6 +22,48 @@ describe MotionDataWrapper::Model do
     Task.all.size.should == 3
   end
 
+  it "#persisted? should return boolean" do
+    task = Task.new title:"Task1"
+    task.persisted?.should.be == false
+    task.save!
+    task.persisted?.should.be == true
+
+    task = Task.first
+    task.persisted?.should.be == true
+    task.destroy
+    task.persisted?.should.be == false
+  end
+
+  it "#destroyed? should return boolean" do
+    task = Task.create title:"Task1"
+    task.destroyed?.should.be == false
+    task.save!
+    task.destroyed?.should.be == false
+    task.destroy
+    task.destroyed?.should.be == true
+
+    Task.create title:"Task1"
+    task = Task.first
+    task.destroyed?.should.be == false
+    task.destroy
+    task.destroyed?.should.be == true
+  end
+
+  it "#new_record? should return boolean" do
+    task = Task.new title:"Task1"
+    task.new_record?.should.be == true
+    task.save!
+    task.new_record?.should.be == false
+    task.destroy
+    task.new_record?.should.be == false
+
+    Task.create title:"Task1"
+    task = Task.first
+    task.new_record?.should.be == false
+    task.destroy
+    task.destroyed?.should.be == true
+  end
+
   it "should be stored to app support dir" do
     # prepare directory
     manager = NSFileManager.defaultManager
