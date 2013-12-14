@@ -1,0 +1,1 @@
+class Tag < MotionDataWrapper::Model; end

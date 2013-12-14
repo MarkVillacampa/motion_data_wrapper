@@ -1,0 +1,1 @@
+class CatHoarder < MotionDataWrapper::Model; end

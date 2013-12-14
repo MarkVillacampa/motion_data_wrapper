@@ -1,0 +1,1 @@
+class Searchable < MotionDataWrapper::Model; end

@@ -1,0 +1,1 @@
+class Cat < MotionDataWrapper::Model; end
