@@ -1,13 +1,13 @@
 module MotionDataWrapper
   class Model < NSManagedObject
     module Persistence
-    
+
       def self.included(base)
         base.extend(ClassMethods)
       end
- 
+
       module ClassMethods
-      
+
         def create(attributes={})
           begin
             model = create!(attributes)
@@ -21,18 +21,21 @@ module MotionDataWrapper
           model.save!
           model
         end
-      
+
         def new(attributes={})
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:nil).tap do |model|
             model.instance_variable_set('@new_record', true)
             attributes.each do |keyPath, value|
+              if attribute_alias?(keyPath)
+                keyPath = attribute_alias(keyPath)
+              end
               model.setValue(value, forKey:keyPath)
             end
           end
         end
-      
+
       end
-  
+
       def awakeFromFetch
         super
         after_fetch if respond_to? :after_fetch
@@ -42,9 +45,9 @@ module MotionDataWrapper
         super
         after_fetch if respond_to? :after_fetch
       end
-  
+
       def destroy
-      
+
         if context = managedObjectContext
           before_destroy_callback
           context.deleteObject(self)
@@ -55,21 +58,21 @@ module MotionDataWrapper
             freeze
           end
         end
-      
+
       end
-    
+
       def destroyed?
         @destroyed || false
       end
-    
+
       def new_record?
         @new_record || false
       end
-    
+
       def persisted?
         !(new_record? || destroyed?)
       end
-    
+
       def save
         begin
           save!
@@ -78,8 +81,8 @@ module MotionDataWrapper
         end
         true
       end
-    
-      def save!        
+
+      def save!
         unless context = managedObjectContext
           context = App.delegate.managedObjectContext
           context.insertObject(self)
@@ -96,9 +99,9 @@ module MotionDataWrapper
 
         true
       end
-  
+
       private
-  
+
       def before_save_callback
         before_save if respond_to? :before_save
         @is_new_record = new_record?
@@ -108,7 +111,7 @@ module MotionDataWrapper
           before_update if respond_to? :before_update
         end
       end
-  
+
       def after_save_callback
         if @is_new_record
           after_create if respond_to? :after_create
@@ -121,11 +124,11 @@ module MotionDataWrapper
       def before_destroy_callback
         before_destroy if respond_to? :before_destroy
       end
-  
+
       def after_destroy_callback
         after_destroy if respond_to? :after_destroy
       end
-  
+
     end
   end
 end

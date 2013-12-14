@@ -20,15 +20,12 @@ module MotionDataWrapper
         model = NSManagedObjectModel.mergedModelFromBundles([NSBundle.mainBundle]).mutableCopy
 
         model.entities.each do |entity|
-          begin
-            Kernel.const_get(entity.name)
+          if Kernel.const_defined?(entity.name)
             entity.setManagedObjectClassName(entity.name)
-
-          rescue NameError
+          else
             entity.setManagedObjectClassName("Model")
           end
         end
-
         model
       end
     end
@@ -54,11 +51,11 @@ module MotionDataWrapper
         support_dir.URLByAppendingPathComponent("#{sqlite_store_name}.sqlite")
       end
     end
-    
+
     def sqlite_path
       @sqlite_path || File.join(App.documents_path, "#{sqlite_store_name}.sqlite")
     end
-    
+
     def sqlite_path= path
       @sqlite_path = path
     end
