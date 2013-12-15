@@ -8,32 +8,29 @@ module MotionDataWrapper
 
       module ClassMethods
 
-        def create(attributes)
+        def create(attributes = nil, &block)
           begin
-            if attributes.is_a?(Array)
-              attributes.collect { |attr| create!(attr) }
-            else
-              create!(attributes)
-            end
+            create!(attributes, &block)
           rescue MotionDataWrapper::RecordNotSaved
           end
         end
 
-        def create!(attributes={})
-          model = new(attributes)
-          model.save!
-          model
+        def create!(attributes = nil, &block)
+          if attributes.is_a?(Array)
+            attributes.collect { |attr| create!(attr, &block) }
+          else
+            object = new(attributes)
+            yield(object) if block_given?
+            object.save!
+            object
+          end
         end
 
-        def new(attributes={})
+        def new(attributes, &block)
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:nil).tap do |model|
             model.instance_variable_set('@new_record', true)
-            attributes.each do |keyPath, value|
-              if attribute_alias?(keyPath)
-                keyPath = attribute_alias(keyPath)
-              end
-              model.setValue(value, forKey:keyPath)
-            end
+            model.assign_attributes(attributes)
+            yield(model) if block_given?
           end
         end
 
