@@ -86,7 +86,7 @@ module MotionDataWrapper
           if method.start_with?("find_by_")
             attribute = method.gsub("find_by_", "").gsub("!", "")
 
-            if valid_attribute? attribute
+            if has_attribute? attribute
               chain = relation.where("#{attribute} = ?", *args)
 
               if method.end_with?("!")
@@ -102,7 +102,7 @@ module MotionDataWrapper
           elsif method.start_with?("find_all_by_")
             attribute = method.gsub("find_all_by_", "")
 
-            if valid_attribute? attribute
+            if has_attribute? attribute
               relation.where("#{attribute} = ?", *args).to_a
             else
               super
@@ -115,11 +115,6 @@ module MotionDataWrapper
 
         def relation
           Relation.alloc.initWithClass(self)
-        end
-
-        def valid_attribute?(attribute)
-          attributes = entity_description.properties.select { |p| p.is_a?(NSAttributeDescription) }.map { |p| p.name.to_sym }
-          attributes.include? attribute.to_sym
         end
       end
 
