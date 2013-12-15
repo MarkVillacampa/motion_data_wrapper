@@ -36,6 +36,28 @@ module MotionDataWrapper
 
       end
 
+      def update_attribute(name, value)
+        assign_attributes(name => value)
+        save
+      end
+
+      alias update_column update_attribute
+
+      def update(attributes)
+        assign_attributes(attributes)
+        save
+      end
+
+      alias update_attributes update
+      alias update_columns update
+
+      def update!(attributes)
+        assign_attributes(attributes)
+        save!
+      end
+
+      alias update_attributes! update!
+
       def awakeFromFetch
         super
         after_fetch if respond_to? :after_fetch

@@ -64,6 +64,23 @@ describe MotionDataWrapper::Model do
     task.destroyed?.should.be == true
   end
 
+  it "should update various attribute and save" do
+    task = Task.new(title: "Task1", authorName: "Author1")
+    task.persisted?.should.be == false
+    task.update_attributes(title: "Task2", authorName: "Author2")
+    task.persisted?.should.be == true
+    task.title.should.be == "Task2"
+    task.authorName.should.be == "Author2"
+  end
+
+  it "should update one attribute and save" do
+    cat = Task.new(title: "Task1", authorName: "Author1")
+    cat.persisted?.should.be == false
+    cat.update_attribute(:authorName, "Author2")
+    cat.persisted?.should.be == true
+    cat.authorName.should.be == "Author2"
+  end
+
   it "should be stored to app support dir" do
     # prepare directory
     manager = NSFileManager.defaultManager
