@@ -6,6 +6,7 @@ module MotionDataWrapper
     include Validations
     include AttributeMethods
     include NestedAttributes
+    include AttributeAssignment
 
     def inspect
       properties = []

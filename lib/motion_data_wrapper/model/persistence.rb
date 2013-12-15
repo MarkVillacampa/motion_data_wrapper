@@ -8,43 +8,55 @@ module MotionDataWrapper
 
       module ClassMethods
 
-        def create(attributes={})
+        def create(attributes = nil, &block)
           begin
-            model = create!(attributes)
+            create!(attributes, &block)
           rescue MotionDataWrapper::RecordNotSaved
           end
-          model
         end
 
-        def create!(attributes={})
-          model = new(attributes)
-          model.save!
-          model
+        def create!(attributes = nil, &block)
+          if attributes.is_a?(Array)
+            attributes.collect { |attr| create!(attr, &block) }
+          else
+            object = new(attributes)
+            yield(object) if block_given?
+            object.save!
+            object
+          end
         end
 
-        def new(attributes={})
+        def new(attributes = nil, &block)
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:nil).tap do |model|
             model.instance_variable_set('@new_record', true)
-            attributes.each do |keyPath, value|
-
-              if attribute_alias?(keyPath)
-                keyPath = attribute_alias(keyPath)
-              end
-
-              if (value.is_a?(Hash) || value.is_a?(Array)) && !model.entity.relationshipsByName[keyPath.to_s].nil?
-                model.assign_nested_attributes(keyPath, value)
-              else
-                if model.entity.attributesByName[keyPath.to_s].attributeType == NSDateAttributeType
-                  value = Time.iso8601_with_timezone(value)
-                end
-                model.setValue(value, forKey:keyPath)
-              end
-            end
-
+            model.assign_attributes(attributes)
+            yield(model) if block_given?
           end
         end
 
       end
+
+      def update_attribute(name, value)
+        assign_attributes(name => value)
+        save
+      end
+
+      alias update_column update_attribute
+
+      def update(attributes)
+        assign_attributes(attributes)
+        save
+      end
+
+      alias update_attributes update
+      alias update_columns update
+
+      def update!(attributes)
+        assign_attributes(attributes)
+        save!
+      end
+
+      alias update_attributes! update!
 
       def awakeFromFetch
         super
@@ -95,6 +107,7 @@ module MotionDataWrapper
       def save!
         unless context = managedObjectContext
           insert_in_context(App.delegate.managedObjectContext)
+          context = managedObjectContext
         end
 
         contexts = [context]
@@ -116,6 +129,7 @@ module MotionDataWrapper
 
       def insert_in_context(context)
         context.insertObject(self)
+        context
       end
 
       private
