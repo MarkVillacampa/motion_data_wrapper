@@ -15,11 +15,37 @@ describe MotionDataWrapper::Model do
     Task.all.size.should == 1
   end
 
+  it "should create and return an empty task" do
+    task = Task.create
+    task.entity.managedObjectClassName.should.be == "Task"
+    Task.all.size.should == 1
+  end
+
   it "should create and return 3 tasks" do
     tasks = Task.create [{title:"Task1"}, {title:"Task2"}, {title:"Task3"}]
     tasks.count.should.be == 3
     tasks.each { |t| t.entity.managedObjectClassName.should.be == "Task" }
     Task.all.size.should == 3
+  end
+
+  it "should create and return 3 empty tasks" do
+    tasks = Task.create [{}, {}, {}]
+    tasks.count.should.be == 3
+    tasks.each { |t| t.entity.managedObjectClassName.should.be == "Task" }
+    Task.all.size.should == 3
+  end
+
+  it "should not save an invalid record" do
+    author = Author.create
+    author.should.be == nil
+    Author.all.size.should.be == 0
+  end
+
+  it "should not save an invalid record and raise" do
+    lambda {
+      author = Author.create!
+      author.should.be == nil
+    }.should.raise(MotionDataWrapper::RecordNotSaved)
   end
 
   it "#persisted? should return boolean" do
