@@ -21,9 +21,11 @@ module MotionDataWrapper
           if (value.is_a?(Hash) || value.is_a?(Array)) && has_relationship?(key)
             assign_nested_attributes(key, value)
           else
-            # if self.attributes[key.to_s].attributeType == NSDateAttributeType
-            #   value = Time.iso8601_with_timezone(value)
-            # end
+            # TODO: Manage more possibly problematic `attributeType`s
+            # and extract this somewhere else
+            if self.attributes[key.to_s].attributeType == NSDateAttributeType
+              value = Time.iso8601_with_timezone(value)
+            end
             setValue(value, forKey:key)
           end
         end
