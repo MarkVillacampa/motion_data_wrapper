@@ -8,14 +8,14 @@ module MotionDataWrapper
 
       module ClassMethods
 
-        def create(attributes = nil, &block)
+        def create(attributes = {}, &block)
           begin
             create!(attributes, &block)
           rescue MotionDataWrapper::RecordNotSaved
           end
         end
 
-        def create!(attributes = nil, &block)
+        def create!(attributes = {}, &block)
           if attributes.is_a?(Array)
             attributes.collect { |attr| create!(attr, &block) }
           else
@@ -26,14 +26,32 @@ module MotionDataWrapper
           end
         end
 
-        def new(attributes = nil, &block)
-          alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:nil).tap do |model|
+        def new(attributes = {}, &block)
+          temp_context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSPrivateQueueConcurrencyType)
+          temp_context.parentContext = App.delegate.managedObjectContext
+
+          attributes = {} if attributes.nil?
+
+          alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:temp_context).tap do |model|
             model.instance_variable_set('@new_record', true)
             model.assign_attributes(attributes)
             yield(model) if block_given?
           end
         end
 
+        # This method is used when we instantiate a nested model in
+        # MotionDataWrapper::Model::NestedAttributes to be included
+        # in a relationship, it has to be inserted in its parent's
+        # context rather than a new temp context
+        def new_with_context(attributes={}, context=nil,&block)
+          attributes = {} if attributes.nil?
+
+          alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:context).tap do |model|
+            model.instance_variable_set('@new_record', true)
+            model.assign_attributes(attributes)
+            yield(model) if block_given?
+          end
+        end
       end
 
       def update_attribute(name, value)
@@ -105,22 +123,31 @@ module MotionDataWrapper
       end
 
       def save!
-        unless context = managedObjectContext
-          insert_in_context(App.delegate.managedObjectContext)
-          context = managedObjectContext
-        end
-
-        contexts = [context]
-        contexts << context.parentContext if context.parentContext
-
         before_save_callback
         error = Pointer.new(:object)
-        contexts.each do |ctx|
-          unless ctx.save(error)
-            ctx.deleteObject(self)
-            raise MotionDataWrapper::RecordNotSaved, self and return false
+        context = self.managedObjectContext
+        failed = false
+        context.performBlockAndWait(lambda {
+          unless context.save(error)
+            context.deleteObject(self)
+            failed = true
           end
+          if parentContext = context.parentContext
+            parentContext.performBlockAndWait(
+              proc {
+                unless parentContext.save(error)
+                  parentContext.deleteObject(self)
+                  failed = true
+                end
+              }
+            )
+          end
+        })
+
+        if failed
+          raise MotionDataWrapper::RecordNotSaved, self and return false
         end
+
         instance_variable_set('@new_record', false)
         after_save_callback
 

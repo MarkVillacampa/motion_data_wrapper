@@ -5,8 +5,7 @@ describe 'MotionDataWrapper::Model context support' do
 
     # Add a task to the main context, just don't save the context
     # If saved, then @second_context would have the task from the persistent store
-    @task = Task.new
-    App.delegate.managedObjectContext.insertObject @task
+    @task = Task.new_with_context({}, App.delegate.managedObjectContext)
   end
 
   after do
@@ -17,8 +16,7 @@ describe 'MotionDataWrapper::Model context support' do
     it "should return task from second context only" do
       Task.with_context(@second_context).all.should.be.empty
 
-      new_task = Task.new
-      @second_context.insertObject new_task
+      new_task = Task.new_with_context({}, @second_context)
 
       Task.with_context(@second_context).all.should.be == [new_task]
       Task.limit(1).with_context(@second_context).all.should.be == [new_task]

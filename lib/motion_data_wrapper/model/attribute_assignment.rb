@@ -8,9 +8,7 @@ module MotionDataWrapper
       module ClassMethods
       end
 
-      def assign_attributes(new_attributes)
-        return if new_attributes.nil?
-
+      def assign_attributes(new_attributes={})
         new_attributes.each do |key, value|
           next unless has_attribute?(key)
 
