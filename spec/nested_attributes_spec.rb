@@ -24,7 +24,7 @@ describe MotionDataWrapper::Model::NestedAttributes do
     lambda {
       Author.accepts_nested_attributes_for :ukelele
       Author.create({ :ukelele => {} })
-    }.should.raise(UnknownAttribute)
+    }.should.raise(MotionDataWrapper::UnknownAttribute)
   end
 
 end
