@@ -23,7 +23,7 @@ module MotionDataWrapper
       def assign_nested_attributes(key, value)
 
         unless self.class.accepted_nested_attributes.include?(key.to_s) && has_relationship?(key)
-          raise ArgumentError, "No association found for name '#{attr}'."
+          raise ArgumentError, "No association found for name '#{key}'."
         end
 
         relation = self.relationships[key.to_s]
