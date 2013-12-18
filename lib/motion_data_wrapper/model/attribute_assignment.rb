@@ -10,7 +10,9 @@ module MotionDataWrapper
 
       def assign_attributes(new_attributes={})
         new_attributes.each do |key, value|
-          next unless has_attribute?(key)
+          unless has_attribute?(key)
+            raise UnknownAttribute, key
+          end
 
           if attribute_alias?(key)
             key = attribute_alias(key)

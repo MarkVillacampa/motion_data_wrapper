@@ -23,7 +23,8 @@ describe MotionDataWrapper::Model::NestedAttributes do
   it "should raise ArgumentError for nonexisting associations" do
     lambda {
       Author.accepts_nested_attributes_for :ukelele
-    }.should.raise(ArgumentError)
+      Author.create({ :ukelele => {} })
+    }.should.raise(UnknownAttribute)
   end
 
 end
