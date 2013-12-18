@@ -2,10 +2,28 @@ module MotionDataWrapper
   class Model < NSManagedObject
     module NestedAttributes
 
-      def assign_nested_attributes(key, value)
-        return unless relation = self.entity.relationshipsByName[key.to_s]
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
 
-        insert_in_context(temp_context)
+      module ClassMethods
+        @@accepted_nested_attributes = []
+
+        def accepts_nested_attributes_for(*nested_attributes)
+          nested_attributes.each do |attr|
+            if has_relationship?(attr.to_s)
+              @@accepted_nested_attributes << attr.to_s
+            else
+              raise ArgumentError, "No association found for name `#{association_name}'. Has it been defined yet?"
+            end
+          end
+        end
+      end
+
+      def assign_nested_attributes(key, value)
+        return unless @@accepted_nested_attributes.include?(key.to_s)
+
+        relation = self.relationships[key.to_s]
 
         klass = Kernel.const_get(relation.destinationEntity.name)
 
@@ -17,26 +35,16 @@ module MotionDataWrapper
       end
 
       def assign_nested_attributes_for_one_to_one_association(key, value, klass)
-        obj = klass.new(v)
-        obj.insert_in_context(temp_context)
+        obj = klass.new_with_context(value, self.managedObjectContext)
         setValue(obj, forKey: key)
       end
 
       def assign_nested_attributes_for_collection_association(key, values, klass)
         values.each do |v|
-          obj = klass.new(v)
-          obj.insert_in_context(temp_context)
+          obj = klass.new_with_context(v, self.managedObjectContext)
           mutableSetValueForKey(key).addObject(obj)
         end
       end
-
-      def temp_context
-        @temp_context ||= begin
-          ctx = NSManagedObjectContext.alloc.initWithConcurrencyType(NSPrivateQueueConcurrencyType)
-          ctx.parentContext = App.delegate.managedObjectContext
-        end
-      end
-
     end
   end
 end
