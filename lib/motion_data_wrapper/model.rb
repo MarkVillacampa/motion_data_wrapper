@@ -36,7 +36,6 @@ module MotionDataWrapper
     # and compare them
     #
     def ==(model)
-      puts "I an being called from #{self.hash} comparing to #{model.hash}"
       if model.respond_to?(:objectID)
         error = Pointer.new(:object)
         App.delegate.managedObjectContext.objectWithID(self.objectID).isEqual(App.delegate.managedObjectContext.objectWithID(model.objectID))
