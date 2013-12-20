@@ -105,7 +105,7 @@ describe MotionDataWrapper::Model do
     end
 
     it "should return task when queried" do
-      Task.find(@task.id).should == @task
+      Task.find_by_id(@task.id).should == @task
     end
   end
 
@@ -126,7 +126,7 @@ describe MotionDataWrapper::Model do
       ->{ task_relation_without_matches.first! }.should.raise MotionDataWrapper::RecordNotFound
     end
   end
-  
+
   describe '#last' do
     it "should return the only task" do
       Task.last.should == @task

@@ -5,6 +5,7 @@ module MotionDataWrapper
     include Persistence
     include Validations
     include AttributeMethods
+    include AttributeMethods::PrimaryKey
     include NestedAttributes
     include AttributeAssignment
 

@@ -24,7 +24,7 @@ module MotionDataWrapper
         # @raises [RecordNotFound]
         # @returns [Model]
         def find(object_id)
-          find_by_id!(object_id)
+          send("find_by_#{self.primary_key}!", object_id)
         end
 
         # @returns [Model] or nil
@@ -119,6 +119,5 @@ module MotionDataWrapper
       end
 
     end
-
   end
 end
