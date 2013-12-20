@@ -23,7 +23,7 @@ module MotionDataWrapper
           else
             # TODO: Manage more possibly problematic `attributeType`s
             # and extract this somewhere else
-            if self.attributes[key.to_s].attributeType == NSDateAttributeType
+            if self.attributes[key.to_s].attributeType == NSDateAttributeType && !value.class.ancestors.include?(NSDate)
               value = Time.iso8601_with_timezone(value)
             end
             setValue(value, forKey:key)
