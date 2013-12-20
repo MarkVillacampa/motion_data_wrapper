@@ -4,3 +4,6 @@ gemfile:
 before_script: bundle install
 script: bundle exec rake spec
 bump: 2
+branches:
+  only:
+    - development
