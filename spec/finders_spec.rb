@@ -443,6 +443,28 @@ describe MotionDataWrapper::Model do
       end
     end
   end
+
+  describe '#find_or_*' do
+    it 'should find and return existing object' do
+      Task.find_or_initialize_by(title: "First Task").should == @task
+      Task.count.should == 1
+    end
+
+    it 'should not find and initialize a new object' do
+      Task.find_or_initialize_by(title: "Second Task").should != @task
+      Task.count.should == 1
+    end
+
+    it 'should find and return existing object' do
+      Task.find_or_create_by(title: "First Task").should == @task
+      Task.count.should == 1
+    end
+
+    it 'should not find and create a new object' do
+      Task.find_or_create_by(title: "Second Task").should != @task
+      Task.count.should == 2
+    end
+  end
 end
 
 def task_relation_without_matches

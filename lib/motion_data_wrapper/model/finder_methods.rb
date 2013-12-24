@@ -27,16 +27,20 @@ module MotionDataWrapper
           send("find_by_#{self.primary_key}!", object_id)
         end
 
-        def find_or_initialize_by(*args)
-          relation.find_or_initialize_by(*args)
+        def find_by(*args)
+          relation.where(*args).take
         end
 
-        def find_or_create_by(*args)
-          relation.find_or_create_by(*args)
+        def find_or_create_by(attributes, &block)
+          find_by(attributes) || create(attributes, &block)
         end
 
-        def find_or_create_by!(*args)
-          relation.find_or_create_by!(*args)
+        def find_or_create_by!(attributes, &block)
+          find_by(attributes) || create!(attributes, &block)
+        end
+
+        def find_or_initialize_by(attributes, &block)
+          find_by(attributes) || new(attributes, &block)
         end
 
         # @returns [Model] or nil
