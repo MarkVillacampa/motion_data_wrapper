@@ -4,7 +4,10 @@ module MotionDataWrapper
     include FinderMethods
 
     def initWithClass(klass)
-      self.entity = klass.entity_description if init
+      if init
+        self.entity = klass.entity_description
+        @model_class = klass
+      end
       self
     end
   end

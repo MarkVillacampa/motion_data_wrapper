@@ -230,19 +230,217 @@ describe MotionDataWrapper::Model do
   end
 
   describe '#where' do
-    it "should set a predicate on the relation" do
-      relation = Task.where("title contains ?", "First Task")
-      relation.predicate.should.not.be.nil
 
-      relation.all.should.be == [@task]
+    describe 'fetching by String' do
+      it "should set a predicate on the relation" do
+        relation = Task.where("title contains 'First Task'")
+        relation.predicate.should.not.be.nil
+
+        relation.all.should.be == [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where("title contains 'First Task'")
+        relation.where("due >= '#{NSDate.date}'", )
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should fetch join with explicit name' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where("author.name = 'John'")
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where("id = 57").where("title = 'First'").to_a.size.should.be == 1
+        Task.where("id = 56").where("title = 'First'").to_a.size.should.be == 0
+      end
     end
 
-    it "should allow specifying #where multiple times" do
-      relation = Task.where("title contains ?", "First Task")
-      relation.where("due >= ?", NSDate.date)
+    describe 'fetching by Array' do
+      it "should set a predicate on the relation" do
+        relation = Task.where("title contains ?", "First Task")
+        relation.predicate.should.not.be.nil
 
-      relation.predicate.should.be.instance_of NSCompoundPredicate
-      relation.predicate.compoundPredicateType.should == NSAndPredicateType
+        relation.all.should.be == [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where("title contains ?", "First Task")
+        relation.where("due >= ?", NSDate.date)
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should fetch join from instantiated object' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where("author == ?", author)
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should fetch join with explicit name' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where("author.name = ?", "John")
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where("id = ?", 57).where("title = ?", "First").to_a.size.should.be == 1
+        Task.where("id = ?", 56).where("title = ?", "First").to_a.size.should.be == 0
+      end
+    end
+
+    describe 'fetching by Hash' do
+      it "should set a predicate on the relation" do
+        relation = Task.where({ title: "First Task"})
+        relation.predicate.should.not.be.nil
+
+        relation.all.should.be == [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where({ title: "First Task"})
+        relation.where({ due: NSDate.date })
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should raise if an attribute is unknown' do
+        lambda {
+          Task.where({ ukelele: "Hello" })
+        }.should.raise(MotionDataWrapper::UnknownAttribute)
+      end
+
+      it 'should fetch join from instantiated object' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where(author: author)
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should fetch join with explicit hash properties' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where(author: { name: "John" })
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where(id: 57).where(title: "First").to_a.size.should.be == 1
+        Task.where(id: 56).where(title: "First").to_a.size.should.be == 0
+      end
+    end
+  end
+
+  describe '#not' do
+    describe 'fetching by String' do
+      it "should set a predicate on the relation" do
+        relation = Task.where.not("title contains 'First Task'")
+        relation.predicate.should.not.be.nil
+
+        relation.all.should.be != [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where("title contains 'First Task'")
+        relation.where.not("due >= '#{NSDate.date}'", )
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should fetch join with explicit name' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where.not("author.name = 'Peter'")
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where("id = 57").where.not("title = 'Second'").to_a.size.should.be == 1
+        Task.where("id = 56").where.not("title = 'Second'").to_a.size.should.be == 0
+      end
+    end
+
+    describe 'fetching by Array' do
+      it "should set a predicate on the relation" do
+        relation = Task.where.not("title contains ?", "First Task")
+        relation.predicate.should.not.be.nil
+
+        relation.all.should.be != [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where("title contains ?", "First Task")
+        relation.where.not("due >= ?", NSDate.date)
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should fetch join from instantiated object' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where.not("author == ?", author)
+        tasks.to_a.size.should == 0
+      end
+
+      it 'should fetch join with explicit name' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where.not("author.name = ?", "Peter")
+        tasks.to_a.size.should == 2
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where("id = ?", 57).where.not("title = ?", "Second").to_a.size.should.be == 1
+        Task.where("id = ?", 56).where.not("title = ?", "Second").to_a.size.should.be == 0
+      end
+    end
+
+    describe 'fetching by Hash' do
+      it "should set a predicate on the relation" do
+        relation = Task.where.not({ title: "First Task"})
+        relation.predicate.should.not.be.nil
+
+        relation.all.should.be != [@task]
+      end
+
+      it "should allow specifying #where multiple times" do
+        relation = Task.where({ title: "First Task"})
+        relation.where.not({ due: NSDate.date })
+
+        relation.predicate.should.be.instance_of NSCompoundPredicate
+        relation.predicate.compoundPredicateType.should == NSAndPredicateType
+      end
+
+      it 'should raise if an attribute is unknown' do
+        lambda {
+          Task.where.not({ ukelele: "Hello" })
+        }.should.raise(MotionDataWrapper::UnknownAttribute)
+      end
+
+      it 'should fetch join from instantiated object' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where.not(author: author)
+        tasks.to_a.size.should == 0
+      end
+
+      it 'should fetch join with explicit hash properties' do
+        author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
+        tasks = Task.where.not(author: { name: "John" })
+        tasks.to_a.size.should == 0
+      end
+
+      it 'should allow chained conditions' do
+        Task.create! id: 57, title: 'First'
+        Task.where(id: 57).where.not(title: "Second").to_a.size.should.be == 1
+        Task.where(id: 56).where.not(title: "Second").to_a.size.should.be == 0
+      end
     end
   end
 end

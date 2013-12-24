@@ -27,6 +27,18 @@ module MotionDataWrapper
           send("find_by_#{self.primary_key}!", object_id)
         end
 
+        def find_or_initialize_by(*args)
+          relation.find_or_initialize_by(*args)
+        end
+
+        def find_or_create_by(*args)
+          relation.find_or_create_by(*args)
+        end
+
+        def find_or_create_by!(*args)
+          relation.find_or_create_by!(*args)
+        end
+
         # @returns [Model] or nil
         def last
           relation.last
@@ -70,8 +82,9 @@ module MotionDataWrapper
         # @returns [Relation]
         # Usage:
         #   where("title contains[cd] ?", "title")
-        def where(*args)
-          relation.where(*args)
+        def where(opts = nil, *rest)
+          return relation if opts.nil?
+          relation.where(opts, *rest)
         end
 
         # @param [NSManagedObjectContext]
