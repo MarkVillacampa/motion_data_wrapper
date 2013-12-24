@@ -250,13 +250,13 @@ describe MotionDataWrapper::Model do
       it 'should fetch join with explicit name' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where("author.name = 'John'")
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where("id = 57").where("title = 'First'").to_a.size.should.be == 1
-        Task.where("id = 56").where("title = 'First'").to_a.size.should.be == 0
+        Task.where("id = 57").where("title = 'First'").count.should.be == 1
+        Task.where("id = 56").where("title = 'First'").count.should.be == 0
       end
     end
 
@@ -279,19 +279,19 @@ describe MotionDataWrapper::Model do
       it 'should fetch join from instantiated object' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where("author == ?", author)
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should fetch join with explicit name' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where("author.name = ?", "John")
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where("id = ?", 57).where("title = ?", "First").to_a.size.should.be == 1
-        Task.where("id = ?", 56).where("title = ?", "First").to_a.size.should.be == 0
+        Task.where("id = ?", 57).where("title = ?", "First").count.should.be == 1
+        Task.where("id = ?", 56).where("title = ?", "First").count.should.be == 0
       end
     end
 
@@ -320,19 +320,19 @@ describe MotionDataWrapper::Model do
       it 'should fetch join from instantiated object' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where(author: author)
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should fetch join with explicit hash properties' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where(author: { name: "John" })
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where(id: 57).where(title: "First").to_a.size.should.be == 1
-        Task.where(id: 56).where(title: "First").to_a.size.should.be == 0
+        Task.where(id: 57).where(title: "First").count.should.be == 1
+        Task.where(id: 56).where(title: "First").count.should.be == 0
       end
     end
   end
@@ -357,13 +357,13 @@ describe MotionDataWrapper::Model do
       it 'should fetch join with explicit name' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where.not("author.name = 'Peter'")
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where("id = 57").where.not("title = 'Second'").to_a.size.should.be == 1
-        Task.where("id = 56").where.not("title = 'Second'").to_a.size.should.be == 0
+        Task.where("id = 57").where.not("title = 'Second'").count.should.be == 1
+        Task.where("id = 56").where.not("title = 'Second'").count.should.be == 0
       end
     end
 
@@ -386,19 +386,19 @@ describe MotionDataWrapper::Model do
       it 'should fetch join from instantiated object' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where.not("author == ?", author)
-        tasks.to_a.size.should == 0
+        tasks.count.should == 0
       end
 
       it 'should fetch join with explicit name' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where.not("author.name = ?", "Peter")
-        tasks.to_a.size.should == 2
+        tasks.count.should == 2
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where("id = ?", 57).where.not("title = ?", "Second").to_a.size.should.be == 1
-        Task.where("id = ?", 56).where.not("title = ?", "Second").to_a.size.should.be == 0
+        Task.where("id = ?", 57).where.not("title = ?", "Second").count.should.be == 1
+        Task.where("id = ?", 56).where.not("title = ?", "Second").count.should.be == 0
       end
     end
 
@@ -427,19 +427,19 @@ describe MotionDataWrapper::Model do
       it 'should fetch join from instantiated object' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where.not(author: author)
-        tasks.to_a.size.should == 0
+        tasks.count.should == 0
       end
 
       it 'should fetch join with explicit hash properties' do
         author = Author.create(name: "John", tasks: [{title:"foo"}, {title: "foo"}])
         tasks = Task.where.not(author: { name: "John" })
-        tasks.to_a.size.should == 0
+        tasks.count.should == 0
       end
 
       it 'should allow chained conditions' do
         Task.create! id: 57, title: 'First'
-        Task.where(id: 57).where.not(title: "Second").to_a.size.should.be == 1
-        Task.where(id: 56).where.not(title: "Second").to_a.size.should.be == 0
+        Task.where(id: 57).where.not(title: "Second").count.should.be == 1
+        Task.where(id: 56).where.not(title: "Second").count.should.be == 0
       end
     end
   end
