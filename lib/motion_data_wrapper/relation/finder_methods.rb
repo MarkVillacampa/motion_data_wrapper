@@ -2,6 +2,8 @@ module MotionDataWrapper
   class Relation < NSFetchRequest
     module FinderMethods
 
+      attr_accessor :where_hash
+
       def all
         to_a
       end
@@ -185,6 +187,7 @@ module MotionDataWrapper
       # the current relation.
       def where(opts = nil, *rest)
         return self if opts.nil?
+        self.where_hash.merge!(opts) if opts.is_a?(Hash)
         new_predicate = build_predicate(opts, rest)
         add_predicate(new_predicate, :and)
         self
@@ -203,21 +206,25 @@ module MotionDataWrapper
         self
       end
 
-      def find_or_initialize_by(*args)
-
+      def first_or_create(attributes = {}, &block)
+        first || @klass.create(self.where_hash.merge(attributes), &block)
       end
 
-      def find_or_create_by(*args)
-        relation.find_or_create_by(*args)
+      def first_or_create!( attributes = {}, &block)
+        first || @klass.create!(self.where_hash.merge(attributes), &block)
       end
 
-      def find_or_create_by!(*args)
-        relation.find_or_create_by!(*args)
+      def first_or_initialize(attributes = {}, &block)
+        first || @klass.new(self.where_hash.merge(attributes), &block)
       end
 
       def with_context(ctx)
         @ctx = ctx
         self
+      end
+
+      def where_hash
+        @where_hash ||= {}
       end
 
       private
@@ -287,13 +294,13 @@ module MotionDataWrapper
         pred_opt = []
 
         args.each_pair do |key, value|
-          raise UnknownAttribute, key unless @model_class.has_attribute?(key)
+          raise UnknownAttribute, key unless @klass.has_attribute?(key)
 
-          if @model_class.attribute_alias?(key)
-            key = @model_class.attribute_alias(key)
+          if @klass.attribute_alias?(key)
+            key = @klass.attribute_alias(key)
           end
 
-          if @model_class.has_relationship?(key)
+          if @klass.has_relationship?(key)
             if value.is_a?(Hash)
               value.each_pair do |k, v|
                 preds << "#{key}.#{k} = %@"

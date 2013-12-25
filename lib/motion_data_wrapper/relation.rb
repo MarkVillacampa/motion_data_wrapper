@@ -6,7 +6,7 @@ module MotionDataWrapper
     def initWithClass(klass)
       if init
         self.entity = klass.entity_description
-        @model_class = klass
+        @klass = klass
       end
       self
     end
