@@ -16,8 +16,8 @@ describe MotionDataWrapper::Model::NestedAttributes do
 
   it "should correctly save associated objects" do
     author = Author.where("name = ?", "John").first
-    author.tasks.allObjects.size.should.be == 2
-    Task.all.should.be == Array(author.tasks.allObjects)
+    author.tasks.count.should.be == 2
+    Task.all.size.should.be == 2
   end
 
   it "should raise ArgumentError for nonexisting associations" do

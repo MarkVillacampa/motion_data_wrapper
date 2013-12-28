@@ -34,6 +34,7 @@ module MotionDataWrapper
 
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:temp_context).tap do |model|
             model.instance_variable_set('@new_record', true)
+            model.generate_association_methods
             model.assign_attributes(attributes)
             yield(model) if block_given?
           end
@@ -48,6 +49,7 @@ module MotionDataWrapper
 
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:context).tap do |model|
             model.instance_variable_set('@new_record', true)
+            model.generate_association_methods
             model.assign_attributes(attributes)
             yield(model) if block_given?
           end
@@ -86,21 +88,61 @@ module MotionDataWrapper
         after_fetch if respond_to? :after_fetch
       end
 
-      def destroy
-
-        if context = managedObjectContext
-          before_destroy_callback
-          context.deleteObject(self)
-          error = Pointer.new(:object)
-          if context.save(error)
-            @destroyed = true
-            after_destroy_callback
-            freeze
-          end
-        end
-
+      # This method will be called once when the local child context is saved,
+      #and again when the parent context is saved.
+      # It is used to flag unsaved related objects as persisted when its parent
+      # object is saved:
+      #
+      # task = Task.create(title: "First")
+      # author = task.build_author(name: "John")
+      # author.persisted?
+      # => false
+      # task.save
+      # author.persisted?
+      # => true
+      #
+      def didSave
+        super
+        @new_record = false
       end
 
+      def destroy
+        before_destroy_callback
+
+        context = self.managedObjectContext
+        context.deleteObject(self)
+
+        error = Pointer.new(:object)
+        failed = false
+        context.performBlockAndWait(lambda {
+          unless context.save(error)
+            context.deleteObject(self)
+            failed = true
+          end
+          if parentContext = context.parentContext
+            parentContext.performBlockAndWait(
+              proc {
+                unless parentContext.save(error)
+                  parentContext.deleteObject(self)
+                  failed = true
+                end
+              }
+            )
+          end
+        })
+
+        if failed
+          return false
+        end
+
+        @destroyed = true
+        after_destroy_callback
+        freeze
+        true
+      end
+
+      # WARNING: There is a `deleted?` method which is a convenient alias for
+      # `isDeleted` provided by RubyMotion. This method is different.
       def destroyed?
         @destroyed || false
       end
@@ -159,6 +201,10 @@ module MotionDataWrapper
         context
       end
 
+      def refresh(merge = true)
+        self.managedObjectContext.refreshObject(self, mergeChanges:merge)
+      end
+
       private
 
       def before_save_callback
@@ -187,7 +233,6 @@ module MotionDataWrapper
       def after_destroy_callback
         after_destroy if respond_to? :after_destroy
       end
-
     end
   end
 end

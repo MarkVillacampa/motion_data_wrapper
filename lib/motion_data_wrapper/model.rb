@@ -8,6 +8,7 @@ module MotionDataWrapper
     include AttributeMethods::PrimaryKey
     include NestedAttributes
     include AttributeAssignment
+    include Association
 
     def inspect
       properties = []
