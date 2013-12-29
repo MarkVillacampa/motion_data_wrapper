@@ -73,7 +73,7 @@ module MotionDataWrapper
         primary_key = association_class.primary_key
 
         attributes_collection.each do |attributes|
-          # attributes = attributes.stringify_keys
+          attributes = attributes.stringify_keys if attributes.respond_to?(:stringify_keys)
 
           # Right now, if the atributes include a primary key but it does not correspond with any of the current records, we create a new record.
           # TODO: find a better way to include primary keys here

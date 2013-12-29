@@ -5,7 +5,9 @@ describe "MotionDataWrapper::Model::AttributeMethods::PrimaryKey" do
   end
 
   it "should override primary key" do
+    Task.primary_key = "title"
     Task.primary_key.should.be == "title"
+    Task.primary_key = "id"
   end
 
   it "should fetch tasks by its primary key" do

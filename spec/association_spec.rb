@@ -136,8 +136,8 @@ describe MotionDataWrapper::Model::Association do
       tasks = Task.create([{id:5, title:"First"},{id:6, title:"Second"}])
       @author.tasks = tasks
       @author.save!
-      task = @author.tasks.find("First")
-      task.id.should == 5
+      task = @author.tasks.find(5)
+      task.title.should == "First"
     end
 
     it 'should find task using dynamic finders' do
