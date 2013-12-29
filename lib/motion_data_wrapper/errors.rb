@@ -22,10 +22,19 @@ module MotionDataWrapper
   end
 
   # Raised when unknown attributes are supplied via mass assignment.
-  class UnknownAttribute < StandardError
-    def initialize(attribute)
-      super("unkown attribute: #{attribute}")
+  class UnknownAttributeError < NoMethodError
+
+    attr_reader :record, :attribute
+
+    def initialize(record, attribute)
+      @record = record
+      @attribute = attribute.to_s
+      super("unknown attribute: #{attribute}")
     end
+
+  end
+
+  class RecordNotFound < StandardError
   end
 
 end

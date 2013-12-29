@@ -11,7 +11,7 @@ Motion::Project::App.setup do |app|
   Dir[File.join(File.dirname(__FILE__), "motion_data_wrapper/*.rb")].each { |f| app.files.unshift(f) }
 
   # Load in the modules
-  %w(errors model relation).each do |mod|
+  %w(ext model relation).each do |mod|
     Dir[File.join(File.dirname(__FILE__), "motion_data_wrapper/#{mod}/**/*.rb")].each { |f| app.files.unshift(f) }
   end
 

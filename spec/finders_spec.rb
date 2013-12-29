@@ -314,7 +314,7 @@ describe MotionDataWrapper::Model do
       it 'should raise if an attribute is unknown' do
         lambda {
           Task.where({ ukelele: "Hello" })
-        }.should.raise(MotionDataWrapper::UnknownAttribute)
+        }.should.raise(MotionDataWrapper::UnknownAttributeError)
       end
 
       it 'should fetch join from instantiated object' do
@@ -421,7 +421,7 @@ describe MotionDataWrapper::Model do
       it 'should raise if an attribute is unknown' do
         lambda {
           Task.where.not({ ukelele: "Hello" })
-        }.should.raise(MotionDataWrapper::UnknownAttribute)
+        }.should.raise(MotionDataWrapper::UnknownAttributeError)
       end
 
       it 'should fetch join from instantiated object' do

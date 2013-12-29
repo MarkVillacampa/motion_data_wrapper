@@ -23,7 +23,7 @@ module MotionDataWrapper
       pred_opt = []
 
       args.each_pair do |key, value|
-        raise UnknownAttribute, key unless klass.has_attribute?(key)
+        raise UnknownAttributeError(klass, key) unless klass.has_attribute?(key)
 
         if klass.attribute_alias?(key)
           key = klass.attribute_alias(key)

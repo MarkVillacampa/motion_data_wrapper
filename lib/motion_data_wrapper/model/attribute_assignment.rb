@@ -9,9 +9,12 @@ module MotionDataWrapper
       end
 
       def assign_attributes(new_attributes={})
+        new_attributes = new_attributes.stringify_keys if new_attributes.respond_to?(:stringify_keys)
+
         new_attributes.each do |key, value|
-          unless has_attribute?(key)
-            raise UnknownAttribute, key
+
+          unless has_attribute?(key) || has_relationship?(key)
+            raise UnknownAttributeError.new(self, key)
           end
 
           if attribute_alias?(key)
@@ -30,7 +33,6 @@ module MotionDataWrapper
           end
         end
       end
-
     end
   end
 end

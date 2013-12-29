@@ -80,11 +80,14 @@ module MotionDataWrapper
 
       def awakeFromFetch
         super
+        generate_association_methods
         after_fetch if respond_to? :after_fetch
       end
 
+
       def awakeFromInsert
         super
+        generate_association_methods
         after_fetch if respond_to? :after_fetch
       end
 
