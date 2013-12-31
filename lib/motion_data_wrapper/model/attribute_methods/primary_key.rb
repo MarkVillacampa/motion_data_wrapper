@@ -8,11 +8,11 @@ module MotionDataWrapper
 
         module ClassMethods
           def primary_key
-            @primary_key || 'id'
+            @@primary_key || 'id'
           end
 
           def primary_key=(primary_key)
-            @primary_key = primary_key.to_s
+            @@primary_key = primary_key.to_s
           end
         end
       end
