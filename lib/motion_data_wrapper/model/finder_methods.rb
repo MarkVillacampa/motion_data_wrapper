@@ -24,7 +24,7 @@ module MotionDataWrapper
         # @raises [RecordNotFound]
         # @returns [Model]
         def find(object_id)
-          send("find_by_#{self.primary_key}!", object_id)
+          send("find_by_#{self.primary_key}", object_id)
         end
 
         def find_by(*args)
