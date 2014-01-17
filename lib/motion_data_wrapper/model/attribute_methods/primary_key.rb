@@ -7,8 +7,10 @@ module MotionDataWrapper
         end
 
         module ClassMethods
+          @@primary_key = 'id'
+
           def primary_key
-            @@primary_key || 'id'
+            @@primary_key
           end
 
           def primary_key=(primary_key)
