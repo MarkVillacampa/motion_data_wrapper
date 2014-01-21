@@ -10,6 +10,8 @@ module MotionDataWrapper
 
         context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSMainQueueConcurrencyType)
         context.persistentStoreCoordinator = persistentStoreCoordinator
+        context.undoManager = nil
+        context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
 
         context
       end

@@ -28,6 +28,8 @@ module MotionDataWrapper
 
         def new(attributes = {}, &block)
           temp_context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSPrivateQueueConcurrencyType)
+          temp_context.undoManager = nil
+          temp_context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
           temp_context.parentContext = App.delegate.managedObjectContext
 
           attributes = {} if attributes.nil?
