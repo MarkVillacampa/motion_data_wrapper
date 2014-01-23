@@ -3,16 +3,10 @@ module MotionDataWrapper
 
     def managedObjectContext
       @managedObjectContext ||= begin
-        error_ptr = Pointer.new(:object)
-        unless persistentStoreCoordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqlite_url, options: persistent_store_options, error: error_ptr)
-          raise "Can't add persistent SQLite store: #{error_ptr[0].description}"
-        end
-
         context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSMainQueueConcurrencyType)
         context.persistentStoreCoordinator = persistentStoreCoordinator
         context.undoManager = nil
         context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
-
         context
       end
     end
@@ -33,7 +27,14 @@ module MotionDataWrapper
     end
 
     def persistentStoreCoordinator
-      @coordinator ||= NSPersistentStoreCoordinator.alloc.initWithManagedObjectModel(managedObjectModel)
+      @coordinator ||= begin
+        coordinator = NSPersistentStoreCoordinator.alloc.initWithManagedObjectModel(managedObjectModel)
+        error_ptr = Pointer.new(:object)
+        unless coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqlite_url, options: persistent_store_options, error: error_ptr)
+          raise "Can't add persistent SQLite store: #{error_ptr[0].description}"
+        end
+        coordinator
+      end
     end
 
     def sqlite_store_name
