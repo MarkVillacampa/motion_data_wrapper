@@ -31,6 +31,13 @@ describe MotionDataWrapper::Model::Association do
       retrieved_task.author.name.should.be == "John"
     end
 
+    it 'should set a nil value for an association' do
+      @task.author = nil
+      @task.save!
+      retrieved_task = Task.find_by_id(1)
+      retrieved_task.author.should.be == nil
+    end
+
     it 'should build an association in a persisted object' do
       author = @task.build_author(name: "John")
       author.persisted?.should == false

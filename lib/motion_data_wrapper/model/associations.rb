@@ -32,9 +32,13 @@ module MotionDataWrapper
         # If the object we are setting has already been persisted we retrieve it in the local context.
         # If the object we are setting has not been persisted, we clone it and delete it from its local context.
         self.class.send(:define_method, "#{name}=", lambda { |value|
-          value.save! if !value.persisted?
-          object_in_local_context = self.managedObjectContext.objectWithID(value.objectID)
-          setValue(object_in_local_context, forKey: name)
+          if value.nil?
+            setValue(nil, forKey: name)
+          else
+            value.save! if !value.persisted?
+            object_in_local_context = self.managedObjectContext.objectWithID(value.objectID)
+            setValue(object_in_local_context, forKey: name)
+          end
         })
 
         self.class.send(:define_method, "build_#{name}", lambda { |attributes|
