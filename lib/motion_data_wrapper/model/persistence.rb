@@ -80,12 +80,17 @@ module MotionDataWrapper
 
       alias update_attributes! update!
 
-      def awakeFromFetch
-        super
-        generate_association_methods
-        after_fetch if respond_to? :after_fetch
+      def willAccessValueForKey(key)
+        if !@association_methods_generated
+          generate_association_methods
+          @association_methods_generated = 1
+        end
       end
 
+      def awakeFromFetch
+        super
+        after_fetch if respond_to? :after_fetch
+      end
 
       def awakeFromInsert
         super
@@ -107,7 +112,6 @@ module MotionDataWrapper
       # => true
       #
       def didSave
-        super
         @new_record = false
       end
 

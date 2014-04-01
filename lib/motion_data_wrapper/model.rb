@@ -47,5 +47,12 @@ module MotionDataWrapper
     end
     alias :eql? :==
 
+    def valueForKey(key)
+      willAccessValueForKey(key)
+      tmp = primitiveValueForKey(key)
+      didAccessValueForKey(key)
+      tmp
+    end
+
   end
 end
