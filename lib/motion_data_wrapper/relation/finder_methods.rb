@@ -18,7 +18,20 @@ module MotionDataWrapper
       end
 
       def destroy_all
-        all.map &:destroy
+        all.each do |object|
+          context.deleteObject(object)
+        end
+
+        error = Pointer.new(:object)
+        success = true
+        context.performBlockAndWait(
+          proc {
+            unless context.save(error)
+              success = false
+            end
+          }
+        )
+        success
       end
 
       def empty?

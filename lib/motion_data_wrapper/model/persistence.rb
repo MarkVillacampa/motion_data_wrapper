@@ -125,14 +125,12 @@ module MotionDataWrapper
         failed = false
         context.performBlockAndWait(lambda {
           unless context.save(error)
-            context.deleteObject(self)
             failed = true
           end
           if parentContext = context.parentContext
             parentContext.performBlockAndWait(
               proc {
                 unless parentContext.save(error)
-                  parentContext.deleteObject(self)
                   failed = true
                 end
               }
