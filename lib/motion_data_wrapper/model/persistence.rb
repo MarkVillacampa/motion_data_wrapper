@@ -172,6 +172,11 @@ module MotionDataWrapper
       end
 
       def save!
+        if destroyed?
+          puts "Trying to save a destroyed object, ignoring."
+          return
+        end
+
         before_save_callback
         error = Pointer.new(:object)
         context = self.managedObjectContext
