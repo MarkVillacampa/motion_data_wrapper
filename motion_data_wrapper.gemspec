@@ -18,7 +18,5 @@ Gem::Specification.new do |s|
   s.platform      = Gem::Platform::RUBY
   s.require_paths = ['lib']
 
-  s.add_dependency "bubble-wrap", "~> 1.4.0"
-
   s.add_development_dependency "rake"
 end

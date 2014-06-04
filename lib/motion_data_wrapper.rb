@@ -1,5 +1,4 @@
 require 'motion_data_wrapper/version'
-require 'bubble-wrap'
 
 unless defined?(Motion::Project::Config)
   raise "This file must be required within a RubyMotion project Rakefile."
