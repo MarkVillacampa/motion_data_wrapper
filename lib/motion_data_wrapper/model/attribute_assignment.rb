@@ -21,8 +21,12 @@ module MotionDataWrapper
             key = attribute_alias(key)
           end
 
-          if (value.is_a?(Hash) || value.is_a?(Array)) && has_relationship?(key)
-            assign_nested_attributes(key, value)
+          if has_relationship?(key)
+            if (value.is_a?(Hash) || value.is_a?(Array))
+              assign_nested_attributes(key, value)
+            else
+              setValue(value, forKey:key)
+            end
           else
             # TODO: Manage more possibly problematic `attributeType`s
             # and extract this somewhere else
