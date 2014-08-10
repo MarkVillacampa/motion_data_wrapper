@@ -32,13 +32,10 @@ module MotionDataWrapper
           temp_context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
           temp_context.parentContext = App.delegate.managedObjectContext
 
-          attributes = {} if attributes.nil?
-
-          alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:temp_context).tap do |model|
-            model.instance_variable_set('@new_record', true)
-            model.generate_association_methods
-            model.assign_attributes(attributes)
-            yield(model) if block_given?
+          if attributes.is_a?(Array)
+            attributes.collect { |attr| new_with_context(attr, temp_context, &block) }
+          else
+            new_with_context(attributes, temp_context, &block)
           end
         end
 
