@@ -2,7 +2,11 @@ module App
   module_function
 
   def delegate
-    UIApplication.sharedApplication.delegate
+    if Object.const_defined?("UIApplication")
+      UIApplication.sharedApplication.delegate
+    else
+      NSApplication.sharedApplication.delegate
+    end
   end
 
   def name
