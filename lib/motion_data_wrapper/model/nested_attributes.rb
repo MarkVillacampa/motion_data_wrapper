@@ -7,23 +7,22 @@ module MotionDataWrapper
       end
 
       module ClassMethods
-        @@accepted_nested_attributes = []
-
         def accepted_nested_attributes
-          @@accepted_nested_attributes
+          @accepted_nested_attributes ||= []
         end
 
         def accepts_nested_attributes_for(*nested_attributes)
+          @accepted_nested_attributes ||= []
           nested_attributes.each do |attr|
-            @@accepted_nested_attributes << attr.to_s
+            @accepted_nested_attributes << attr.to_s
           end
         end
       end
 
       def assign_nested_attributes(key, value)
 
-        unless self.class.accepted_nested_attributes.include?(key.to_s) && has_relationship?(key)
-          raise ArgumentError, "No association found for name '#{key}'. Have you set `accepts_nested_attributes_for :#{key}` in the parent model?"
+        unless self.class.modelClass.accepted_nested_attributes.include?(key.to_s) #&& has_relationship?(key)
+          raise ArgumentError, "No association found for name '#{key}' in model '#{self.entity.name}'. Have you set `accepts_nested_attributes_for :#{key}` in the parent model?"
         end
 
         relation = self.relationships[key.to_s]
