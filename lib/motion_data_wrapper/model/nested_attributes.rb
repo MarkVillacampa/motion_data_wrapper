@@ -27,7 +27,7 @@ module MotionDataWrapper
         end
 
         relation = self.relationships[key.to_s]
-        klass = Kernel.const_get(relation.destinationEntity.managedObjectClassName)
+        klass = Object.const_get(relation.destinationEntity.managedObjectClassName)
 
         if relation.isToMany && value.is_a?(Array)
           assign_nested_attributes_for_collection_association(key, value, klass)

@@ -42,7 +42,7 @@ def fixtures(*fixture_names)
     raise MotionDataWrapper::FixtureNotLoaded, "Could not read fixture '#{name}'" unless string
     json = JSON.parse(string.dup)
     raise MotionDataWrapper::FixtureNotLoaded, "Could not parse fixture '#{name}'" unless json
-    klass = Kernel.const_get(class_name)
+    klass = Object.const_get(class_name)
     klass.create!(json)
   end
 end

@@ -4,7 +4,7 @@ module MotionDataWrapper
       class CollectionProxy
         def initialize(model, name, description)
           @model = model
-          @klass = Kernel.const_get(description.destinationEntity.managedObjectClassName)
+          @klass = Object.const_get(description.destinationEntity.managedObjectClassName)
           @name = name
           @description = description
           self
@@ -95,14 +95,14 @@ module MotionDataWrapper
         end
 
         def build(attributes = nil)
-          klass = Kernel.const_get(@description.destinationEntity.managedObjectClassName)
+          klass = Object.const_get(@description.destinationEntity.managedObjectClassName)
           obj = klass.new_with_context(attributes, @model.managedObjectContext)
           @model.mutableSetValueForKey(@name).addObject(obj)
           obj
         end
 
         def create(attributes = nil)
-          klass = Kernel.const_get(@description.destinationEntity.managedObjectClassName)
+          klass = Object.const_get(@description.destinationEntity.managedObjectClassName)
           obj = klass.new_with_context(attributes, @model.managedObjectContext)
           @model.mutableSetValueForKey(@name).addObject(obj)
           @model.save!
