@@ -11,7 +11,7 @@ module MotionDataWrapper
     include Association
 
     def self.inherited(subclass)
-      subclass.generate_association_methods
+      subclass.generate_association_methods if subclass.entity_description
       super
     end
 
