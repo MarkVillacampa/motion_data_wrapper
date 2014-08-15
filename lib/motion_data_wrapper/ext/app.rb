@@ -18,6 +18,11 @@ module App
   end
 
   def documents_path
-    NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0]
+    @documents_path ||= if Object.const_defined?("UIApplication")
+      NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0]
+    else
+      NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true)[0]
+    end
+
   end
 end
