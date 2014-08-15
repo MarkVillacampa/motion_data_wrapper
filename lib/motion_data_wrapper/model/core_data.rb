@@ -39,7 +39,7 @@ module MotionDataWrapper
             if dynamicSubclass?
               modelClass.entity_description
             else
-              App.delegate.managedObjectModel.entitiesByName[name]
+              Manager.shared.managedObjectModel.entitiesByName[name]
             end
           end
         end
