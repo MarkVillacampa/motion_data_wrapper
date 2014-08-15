@@ -48,7 +48,6 @@ module MotionDataWrapper
 
           alloc.initWithEntity(entity_description, insertIntoManagedObjectContext:context).tap do |model|
             model.instance_variable_set('@new_record', true)
-            model.generate_association_methods
             model.assign_attributes(attributes)
             yield(model) if block_given?
           end
@@ -77,13 +76,6 @@ module MotionDataWrapper
 
       alias update_attributes! update!
 
-      def willAccessValueForKey(key)
-        if !@association_methods_generated
-          generate_association_methods
-          @association_methods_generated = 1
-        end
-      end
-
       def awakeFromFetch
         super
         after_fetch if respond_to? :after_fetch
@@ -91,7 +83,6 @@ module MotionDataWrapper
 
       def awakeFromInsert
         super
-        generate_association_methods
         after_fetch if respond_to? :after_fetch
       end
 

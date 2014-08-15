@@ -10,6 +10,11 @@ module MotionDataWrapper
     include AttributeAssignment
     include Association
 
+    def self.inherited(subclass)
+      subclass.generate_association_methods
+      super
+    end
+
     def inspect
       properties = []
       entity.properties.select { |p| p.is_a?(NSAttributeDescription) }.each do |property|

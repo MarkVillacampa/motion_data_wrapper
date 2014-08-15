@@ -33,14 +33,15 @@ describe MotionDataWrapper::Model::NestedAttributes do
     author.tasks.find(1).title.should == "Task1"
   end
 
-  it 'should assign attributes to existing to-one relationship' do
-    task = Task.first
-    author = task.author
-    task.assign_attributes(author: { id: 1, name: "Peter"})
-    task.author.should == author
-    task.author.name.should == "Peter"
-    task.author.id.should == 1
-  end
+  # This functionality has been temporally removed
+  # it 'should assign attributes to existing to-one relationship' do
+  #   task = Task.first
+  #   author = task.author
+  #   task.assign_attributes(author: { id: 1, name: "Peter"})
+  #   task.author.should == author
+  #   task.author.name.should == "Peter"
+  #   task.author.id.should == 1
+  # end
 
   # These two tests currently dont pass, because a new record is created if we mass a
   # primary key attribute which is not present in the relation.
