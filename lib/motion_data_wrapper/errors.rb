@@ -27,9 +27,7 @@ module MotionDataWrapper
     attr_reader :record, :attribute
 
     def initialize(record, attribute)
-      @record = record
-      @attribute = attribute.to_s
-      super("unknown attribute: #{attribute}")
+      super("unknown attribute: #{attribute} for model #{record.entity.name}")
     end
 
   end
