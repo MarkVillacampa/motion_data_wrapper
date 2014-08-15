@@ -10,42 +10,42 @@ module MotionDataWrapper
       # Additionally, no proxy methods are created for there attribute aliases
 
       module ClassMethods
-        @@attribute_aliases = {}
-
         # Allows you to make aliases for attributes.
         def alias_attribute(new_name, old_name)
-          @@attribute_aliases.merge!({new_name.to_s => old_name.to_s})
+          @attribute_aliases ||= {}
+          @attribute_aliases.merge!({new_name.to_s => old_name.to_s})
         end
 
         # Returns the hash containing the aliases
         def attribute_aliases
-          @@attribute_aliases
+          @attribute_aliases ||= {}
         end
 
         # Is +new_name+ an alias?
         def attribute_alias?(new_name)
-          @@attribute_aliases.key? new_name
+          @attribute_aliases ||= {}
+          @attribute_aliases.key? new_name
         end
 
         # Returns the original name for the alias +name+
         def attribute_alias(name)
-          @@attribute_aliases[name]
+          @attribute_aliases[name]
         end
 
         def attribute_names
-          entity_description.propertiesByName.keys
+          @attribute_names ||= entity_description.propertiesByName.keys
         end
 
         def relationship_names
-          entity_description.relationshipsByName.keys
+          @relationship_names ||= entity_description.relationshipsByName.keys
         end
 
         def attributes
-          entity_description.propertiesByName
+          @attributes ||= entity_description.propertiesByName
         end
 
         def relationships
-          entity_description.relationshipsByName
+          @relationships ||= entity_description.relationshipsByName
         end
 
         # An attribute is valid if it is declared in the NSEntityDescription of the model or if there is a alias declared
@@ -63,39 +63,39 @@ module MotionDataWrapper
       # TODO: find a cleaner way to do this
 
       def attribute_aliases
-        self.class.attribute_aliases
+        self.class.modelClass.attribute_aliases
       end
 
       def attribute_alias?(new_name)
-        self.class.attribute_alias?(new_name)
+        self.class.modelClass.attribute_alias?(new_name)
       end
 
       def attribute_alias(name)
-        self.class.attribute_alias(name)
+        self.class.modelClass.attribute_alias(name)
       end
 
       def attribute_names
-        self.class.attribute_names
+        self.class.modelClass.attribute_names
       end
 
       def relationship_names
-        self.class.relationship_names
+        self.class.modelClass.relationship_names
       end
 
       def attributes
-        self.class.attributes
+        self.class.modelClass.attributes
       end
 
       def relationships
-        self.class.relationships
+        self.class.modelClass.relationships
       end
 
       def has_attribute?(attribute)
-        self.class.has_attribute?(attribute)
+        self.class.modelClass.has_attribute?(attribute)
       end
 
       def has_relationship?(attribute)
-        self.class.has_relationship?(attribute)
+        self.class.modelClass.has_relationship?(attribute)
       end
     end
   end
