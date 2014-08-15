@@ -29,8 +29,8 @@ describe MotionDataWrapper::Model::NestedAttributes do
 
   it 'should assign attributes to existing to-many relationship' do
     author = Author.first
-    author.assign_attributes(tasks: [{ id:1, title: "New Title"}])
-    author.tasks.find(1).title.should == "New Title"
+    author.assign_attributes(tasks: [{ id:1, title: "Task1"}])
+    author.tasks.find(1).title.should == "Task1"
   end
 
   it 'should assign attributes to existing to-one relationship' do
