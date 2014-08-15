@@ -14,7 +14,7 @@ module MotionDataWrapper
         new_attributes.each do |key, value|
 
           unless has_attribute?(key) || has_relationship?(key)
-            raise UnknownAttributeError.new(self, key)
+            raise UnknownAttributeError.new(self.class, key)
           end
 
           if attribute_alias?(key)
