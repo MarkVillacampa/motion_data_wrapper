@@ -23,6 +23,7 @@ class Time
       NSDateFormatter.alloc.init.tap do |formatter|
         formatter.dateFormat = dateFormat
         formatter.timeZone   = NSTimeZone.timeZoneWithAbbreviation "UTC"
+        formatter.locale = NSLocale.alloc.initWithLocaleIdentifier("en_US_POSIX")
       end
   end
 
