@@ -29,8 +29,6 @@ module MotionDataWrapper
         Array(context.executeFetchRequest(self, error:error_ptr))
       end
 
-      private
-
       def context
         @ctx || App.delegate.managedObjectContext
       end
