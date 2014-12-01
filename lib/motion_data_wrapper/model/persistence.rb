@@ -109,24 +109,7 @@ module MotionDataWrapper
         context = self.managedObjectContext
         context.deleteObject(self)
 
-        error = Pointer.new(:object)
-        failed = false
-        context.performBlockAndWait(lambda {
-          unless context.save(error)
-            failed = true
-          end
-          if parentContext = context.parentContext
-            parentContext.performBlockAndWait(
-              proc {
-                unless parentContext.save(error)
-                  failed = true
-                end
-              }
-            )
-          end
-        })
-
-        if failed
+        unless save_context_and_parents!(context)
           return false
         end
 
@@ -166,21 +149,39 @@ module MotionDataWrapper
         end
 
         before_save_callback
+
+        save_context_and_parents
+
+        @new_record = false
+        after_save_callback
+
+        true
+      end
+
+      def save_context_and_parents(context = nil)
         error = Pointer.new(:object)
-        context = self.managedObjectContext
+        context = context || self.managedObjectContext
         failed = false
+
         context.performBlockAndWait(lambda {
           unless context.save(error)
+            p error.value.description
             context.deleteObject(self)
             failed = true
           end
-          if parentContext = context.parentContext
-            parentContext.performBlockAndWait(
+
+          @current_saving_context = context.parentContext
+
+          while @current_saving_context
+            @current_saving_context.performBlockAndWait(
               proc {
-                unless parentContext.save(error)
-                  parentContext.deleteObject(self)
+                unless @current_saving_context.save(error)
+                  p error.value.description
+                  @current_saving_context.deleteObject(self)
                   failed = true
                 end
+
+                @current_saving_context = @current_saving_context.parentContext
               }
             )
           end
@@ -188,11 +189,17 @@ module MotionDataWrapper
 
         if failed
           raise MotionDataWrapper::RecordNotSaved, self and return false
+        else
+          return true
         end
+      end
 
-        instance_variable_set('@new_record', false)
-        after_save_callback
-
+      def save_context_and_parents!(context = nil)
+        begin
+          save_context_and_parents(context)
+        rescue MotionDataWrapper::RecordNotSaved
+          return false
+        end
         true
       end
 

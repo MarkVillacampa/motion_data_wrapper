@@ -3,6 +3,16 @@ module MotionDataWrapper
     def managedObjectContext
       @@managedObjectContext ||= begin
         context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSMainQueueConcurrencyType)
+        context.undoManager = nil
+        context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+        context.parentContext = rootManagedObjectContext
+        context
+      end
+    end
+
+    def rootManagedObjectContext
+      @@rootManagedObjectContext ||= begin
+        context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSPrivateQueueConcurrencyType)
         context.persistentStoreCoordinator = persistentStoreCoordinator
         context.undoManager = nil
         context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
@@ -67,6 +77,7 @@ module MotionDataWrapper
       MotionDataWrapper.managedObjectModel.entities.map(&:managedObjectClassName).each { |c| Kernel.const_get(c).clean_entity_description }
 
       @@managedObjectContext = nil
+      @@rootManagedObjectContext = nil
       @@managedObjectModel = nil
       @@coordinator = nil
       @@sqlite_path = nil
