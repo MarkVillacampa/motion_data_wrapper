@@ -1,15 +1,15 @@
 describe 'MotionDataWrapper::Model context support' do
   before do
     @second_context = NSManagedObjectContext.alloc.init
-    @second_context.persistentStoreCoordinator = App.delegate.persistentStoreCoordinator
+    @second_context.persistentStoreCoordinator = MotionDataWrapper.persistentStoreCoordinator
 
     # Add a task to the main context, just don't save the context
     # If saved, then @second_context would have the task from the persistent store
-    @task = Task.new_with_context({}, App.delegate.managedObjectContext)
+    @task = Task.new_with_context({}, MotionDataWrapper.managedObjectContext)
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   describe '#with_context' do

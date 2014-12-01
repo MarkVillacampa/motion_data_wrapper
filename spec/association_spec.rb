@@ -6,7 +6,7 @@ describe MotionDataWrapper::Model::Association do
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   describe 'to-one associations' do

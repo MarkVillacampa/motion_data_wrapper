@@ -1,7 +1,7 @@
 module MotionDataWrapper
   class Model < NSManagedObject
     module Validations
-    
+
       def valid?
         error_ptr = Pointer.new(:object)
         v = new_record? ? validateForInsert(error_ptr) : validateForUpdate(error_ptr)
@@ -26,7 +26,7 @@ module MotionDataWrapper
         end
         errors
       end
-    
+
       private
       def message_for_error_code(c, prop)
         message = case c
@@ -59,7 +59,7 @@ module MotionDataWrapper
           warnings.empty? ? "invalid" : warnings.join(', ')
         end
       end
-    
+
     end
   end
 end

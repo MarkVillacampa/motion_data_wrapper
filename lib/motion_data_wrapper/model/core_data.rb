@@ -39,9 +39,13 @@ module MotionDataWrapper
             if dynamicSubclass?
               modelClass.entity_description
             else
-              Manager.shared.managedObjectModel.entitiesByName[name]
+              MotionDataWrapper.managedObjectModel.entitiesByName[name]
             end
           end
+        end
+
+        def clean_entity_description
+          @_metadata = nil
         end
       end
 

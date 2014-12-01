@@ -5,7 +5,7 @@ describe "MotionDataWrapper::AttributeMethods support for aliases" do
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   it "can write aliased attributes" do

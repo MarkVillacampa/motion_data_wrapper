@@ -30,7 +30,7 @@ module MotionDataWrapper
           temp_context = NSManagedObjectContext.alloc.initWithConcurrencyType(NSPrivateQueueConcurrencyType)
           temp_context.undoManager = nil
           temp_context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
-          temp_context.parentContext = App.delegate.managedObjectContext
+          temp_context.parentContext = MotionDataWrapper.managedObjectContext
 
           if attributes.is_a?(Array)
             attributes.collect { |attr| new_with_context(attr, temp_context, &block) }

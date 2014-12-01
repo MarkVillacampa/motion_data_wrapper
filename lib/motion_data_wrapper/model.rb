@@ -45,7 +45,7 @@ module MotionDataWrapper
     def ==(model)
       if model.respond_to?(:objectID)
         error = Pointer.new(:object)
-        App.delegate.managedObjectContext.objectWithID(self.objectID).isEqual(App.delegate.managedObjectContext.objectWithID(model.objectID))
+        MotionDataWrapper.managedObjectContext.objectWithID(self.objectID).isEqual(MotionDataWrapper.managedObjectContext.objectWithID(model.objectID))
       else
         super
       end

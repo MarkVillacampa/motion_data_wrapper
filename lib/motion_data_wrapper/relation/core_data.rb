@@ -30,7 +30,7 @@ module MotionDataWrapper
       end
 
       def context
-        @ctx || App.delegate.managedObjectContext
+        @ctx || MotionDataWrapper.managedObjectContext
       end
     end
   end

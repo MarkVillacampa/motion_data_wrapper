@@ -2,7 +2,7 @@
 describe MotionDataWrapper::Model do
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   it "should create and return task" do
@@ -106,7 +106,7 @@ describe MotionDataWrapper::Model do
   it "should be stored to app support dir" do
     Task.create title:"Task1"
     manager = NSFileManager.defaultManager
-    manager.fileExistsAtPath(MotionDataWrapper::Manager.shared.sqlite_url.path).should == true
+    manager.fileExistsAtPath(MotionDataWrapper.sqlite_url.path).should == true
   end
 
 end

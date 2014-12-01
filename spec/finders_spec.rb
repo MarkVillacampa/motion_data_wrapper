@@ -6,7 +6,7 @@ describe MotionDataWrapper::Model do
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   describe '#all' do

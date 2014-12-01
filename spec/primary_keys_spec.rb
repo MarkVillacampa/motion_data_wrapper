@@ -1,7 +1,7 @@
 describe "MotionDataWrapper::Model::AttributeMethods::PrimaryKey" do
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   it "should override primary key" do

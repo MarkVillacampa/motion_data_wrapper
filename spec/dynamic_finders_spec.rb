@@ -7,7 +7,7 @@ describe "MotionDataWrapper::Model dynamic finders " do
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   it "#find_by_title should return only 1 of the 2 records" do

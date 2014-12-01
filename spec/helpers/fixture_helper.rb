@@ -35,7 +35,7 @@ class MotionDataWrapper::FixtureNotLoaded < StandardError; end
 
 def fixtures(*fixture_names)
   fixture_names.map(&:to_s).each do |name|
-    class_name = name.camelize
+    class_name = name.mdw_camelize
     filePath = NSBundle.mainBundle.pathForResource("fixtures/#{name}", ofType:"json")
     raise MotionDataWrapper::FixtureNotLoaded, "Could not find fixture '#{name}'" unless filePath
     string = NSMutableString.stringWithContentsOfFile(filePath, encoding:NSUTF8StringEncoding)

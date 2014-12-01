@@ -5,7 +5,7 @@ describe MotionDataWrapper::Model::NestedAttributes do
   end
 
   after do
-    clean_core_data
+    MotionDataWrapper.clean_data
   end
 
   it "should ceate an author with two tasks" do

@@ -60,10 +60,10 @@ module MotionDataWrapper
     def self.retrieve_objects_in_local_context(args)
       if args.is_a? Array
         args.map do |v|
-          v.is_a?(NSManagedObject) ? App.delegate.managedObjectContext.objectWithID(v.objectID) : v
+          v.is_a?(NSManagedObject) ? MotionDataWrapper.managedObjectContext.objectWithID(v.objectID) : v
         end
       elsif args.is_a? NSManagedObject
-        App.delegate.managedObjectContext.objectWithID(args.objectID)
+        MotionDataWrapper.managedObjectContext.objectWithID(args.objectID)
       else
         args
       end

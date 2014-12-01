@@ -13,7 +13,7 @@ end
 models = ['HoardedCat', 'Task', 'Post', 'Cloud', 'Tag', 'House', 'Human', 'Searchable', 'Resident', 'Event', 'Party', 'CatHoarder', 'StrictHuman', 'Child', 'Category', 'Meeting', 'Storm', 'Parent', 'Cat']
 
 models.each do |model|
-  File.open("app/#{model.underscore}.rb", "w") do |f|
+  File.open("app/#{model.mdw_underscore}.rb", "w") do |f|
     f.write("class #{model} < MotionDataWrapper::Model; end")
   end
 end
