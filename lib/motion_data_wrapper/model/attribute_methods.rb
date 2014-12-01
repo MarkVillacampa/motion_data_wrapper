@@ -7,7 +7,7 @@ module MotionDataWrapper
       end
 
       # NOTE: Aliases are only taken into account when initializing a new object.
-      # Additionally, no proxy methods are created for there attribute aliases
+      # Additionally, no proxy methods are created for those attribute aliases
 
       module ClassMethods
         # Allows you to make aliases for attributes.
