@@ -32,7 +32,7 @@ module MotionDataWrapper
     end
 
     def persistentStoreCoordinator
-      @@coordinator ||= begin
+      @@persistentStoreCoordinator ||= begin
         coordinator = NSPersistentStoreCoordinator.alloc.initWithManagedObjectModel(managedObjectModel)
         error_ptr = Pointer.new(:object)
         unless coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqlite_url, options: persistent_store_options, error: error_ptr)
@@ -43,6 +43,10 @@ module MotionDataWrapper
     end
 
     def sqlite_store_name
+      app_name
+    end
+
+    def app_name
       NSBundle.mainBundle.infoDictionary.objectForKey('CFBundleDisplayName')
     end
 
@@ -54,18 +58,22 @@ module MotionDataWrapper
         unless support_dir = NSFileManager.defaultManager.URLForDirectory(NSApplicationSupportDirectory, inDomain: NSUserDomainMask, appropriateForURL: nil, create: true, error: error_ptr)
           raise "error creating application support folder: #{error_ptr[0]}"
         end
-        support_dir = support_dir.URLByAppendingPathComponent("#{App.name}")
+        support_dir = support_dir.URLByAppendingPathComponent("#{app_name}")
         Dir.mkdir(support_dir.path) unless Dir.exists?(support_dir.path)
         support_dir.URLByAppendingPathComponent("#{sqlite_store_name}.sqlite")
       end
     end
 
     def sqlite_path
-      @@sqlite_path || File.join(App.documents_path, "#{sqlite_store_name}.sqlite")
+      @@sqlite_path ||= File.join(documents_path, "#{sqlite_store_name}.sqlite")
     end
 
-    def sqlite_path= path
-      @@sqlite_path = path
+    def documents_path
+      @@documents_path ||= if Object.const_defined?("UIApplication")
+          NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0]
+        else
+          NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true)[0]
+        end
     end
 
     def persistent_store_options
@@ -79,8 +87,7 @@ module MotionDataWrapper
       @@managedObjectContext = nil
       @@rootManagedObjectContext = nil
       @@managedObjectModel = nil
-      @@coordinator = nil
-      @@sqlite_path = nil
+      @@persistentStoreCoordinator = nil
       manager = NSFileManager.defaultManager
       manager.removeItemAtURL sqlite_url, error:nil
       manager.removeItemAtURL NSURL.URLWithString(sqlite_url.absoluteString+'-shm'), error:nil
