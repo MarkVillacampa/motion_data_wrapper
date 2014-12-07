@@ -52,6 +52,9 @@ module MotionDataWrapper
     end
     alias :eql? :==
 
+    # RubyMotion methods defined with attr_accessor or define_method cannot be called from Objc
+    # This override is needed so that we return the primitive NSSet of the relationship instead of
+    # the CollectionProxy returned from the dynamically generated methods.
     def valueForKey(key)
       willAccessValueForKey(key)
       tmp = primitiveValueForKey(key)

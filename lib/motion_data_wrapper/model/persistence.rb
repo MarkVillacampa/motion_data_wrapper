@@ -76,16 +76,6 @@ module MotionDataWrapper
 
       alias update_attributes! update!
 
-      def awakeFromFetch
-        super
-        after_fetch if respond_to? :after_fetch
-      end
-
-      def awakeFromInsert
-        super
-        after_fetch if respond_to? :after_fetch
-      end
-
       # This method will be called once when the local child context is saved,
       #and again when the parent context is saved.
       # It is used to flag unsaved related objects as persisted when its parent
